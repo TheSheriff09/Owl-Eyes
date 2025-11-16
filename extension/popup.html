@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            width: 480px;
+            padding: 20px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f5f7fa;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .header h1 {
+            color: #2c5530;
+            margin: 0;
+            font-size: 20px;
+        }
+        .header .subtitle {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+        button {
+            background: linear-gradient(135deg, #2c5530, #4a7c59);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #4a7c59, #5d9e6f);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 85, 48, 0.3);
+        }
+        button:disabled {
+            background: #cccccc;
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        #result {
+            margin-top: 15px;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            background: white;
+            min-height: 60px;
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .api-key-section {
+            margin-bottom: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e1e5e9;
+        }
+        .api-key-section input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+        .hidden {
+            display: none;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+        .shortcut-info {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e1e5e9;
+        }
+        .shortcut-info h3 {
+            margin: 0 0 15px 0;
+            color: #2c5530;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .shortcut-info h4 {
+            margin: 20px 0 10px 0;
+            color: #333;
+            font-size: 14px;
+        }
+        .settings textarea {
+            height: 70px;
+            margin-bottom: 10px;
+        }
+        .status {
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .status.active {
+            background: #e8f5e8;
+            color: #2c5530;
+            border: 2px solid #2c5530;
+        }
+        .status.inactive {
+            background: #ffe8e8;
+            color: #c53030;
+            border: 2px solid #c53030;
+        }
+        .debug-section {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .debug-section h4 {
+            margin: 0 0 10px 0;
+            color: #856404;
+        }
+        .debug-info {
+            font-size: 12px;
+            color: #666;
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .key-shortcut {
+            display: inline-block;
+            background: #2c5530;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 0 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🦉 Owl Eyes</h1>
+            <div class="subtitle">AI-Powered Screen Analysis with Gemini</div>
+        </div>
+        
+        <div class="api-key-section">
+            <input type="password" id="apiKey" placeholder="Enter your Gemini API key">
+            <button id="saveApiKey">Save API Key</button>
+        </div>
+        
+        <div id="mainSection" class="hidden">
+            <div id="status" class="status inactive">
+                🔴 Press <span class="key-shortcut">C</span> key to capture and analyze
+            </div>
+            
+            <div class="shortcut-info">
+                <h3>🚀 Quick Capture</h3>
+                <p>Press the <span class="key-shortcut">C</span> key on any webpage to instantly capture and analyze!</p>
+                
+                <h4>Custom Analysis Question:</h4>
+<textarea id="defaultQuestion" placeholder="Custom question for analysis...">Find any questions in this image and provide ONLY the direct answer. For multiple choice: just the letter. For matching: format like 1-A, 2-B. For math: just the number. Maximum 10 words. No explanations.</textarea>                <button id="saveSettings">Save Settings</button>
+            </div>
+
+            <h4>Manual Analysis:</h4>
+            <textarea id="question" placeholder="Or type a specific question about the current page..."></textarea>
+            <button id="captureAndAsk">Capture & Ask Gemini</button>
+            <div id="result"></div>
+
+            <div class="debug-section">
+                <h4>🔧 Debug Information</h4>
+                <div>Extension Status: <span id="debugStatus">Loading...</span></div>
+                <div>API Key: <span id="debugApiKey">Not set</span></div>
+                <div>Last Action: <span id="debugLastAction">None</span></div>
+                <button id="testCapture">Test Screen Capture</button>
+                <div class="debug-info" id="debugInfo">
+                    No debug information available yet.
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
